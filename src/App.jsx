@@ -30,9 +30,10 @@ function App() {
     //errores a 0
     setErrores(0)
     //palabra nueva
-    setpalabrasecreta(getpalabrarandom())
+    setpalabrasecreta(getpalabrarandom().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
     //borrar errores
     setfallos([])
+    setaciertos([])
   }
 
   const comprobarletra = (letra) => {
@@ -42,9 +43,11 @@ function App() {
         //mostrar letra
 
         //guardar letra
-        setaciertos((aciertos) => [...aciertos,letra])
-
-        //TO-DO comprobar si ha acertado la palabra entera
+        setaciertos((aciertos) => (aciertos.includes(letra) ? aciertos : [...aciertos,letra]))
+        if (palabrasecreta.split('').every((letra) => aciertos.includes(letra))) {
+          setGanador(true)
+        }
+          //TO-DO comprobar si ha acertado la palabra entera
         //setGanador(true)
 
     }else{
@@ -64,7 +67,7 @@ function App() {
     const teclapresionada = (event) => {
       if(ganador == null){
 
-        const letra = event.key.toLowerCase()
+        const letra = event.key.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
         
         if(/^[a-z]$/.test(letra)){
           comprobarletra(letra, errores)
@@ -73,17 +76,17 @@ function App() {
     }
     window.addEventListener("keydown", teclapresionada)
     return () => window.removeEventListener("keydown", teclapresionada)
-  }, [errores])
+  }, [errores,aciertos])
 
   return (
     <>
         <pre>
           <Dibujoscolgao errores={errores}></Dibujoscolgao>
-          <PalabraOculta></PalabraOculta>
+          <PalabraOculta palabrasecreta={palabrasecreta} aciertos={aciertos}></PalabraOculta>
           <p>Fallos: {fallos} Aciertos: {aciertos}</p>
-          <p className='dibujoscolgao'>{palabrasecreta}</p>
-          {/*<button onClick={aumentarerrores}>Aumentar errores</button>*/}
-          <Modal ganador={ganador} reset={resetear}></Modal>
+{/*           <p className='dibujoscolgao'>{palabrasecreta}</p>
+ */}          {/*<button onClick={aumentarerrores}>Aumentar errores</button>*/}
+          <Modal ganador={ganador} palabrasecreta={palabrasecreta} reset={resetear}></Modal>
           
         </pre>
     </>
