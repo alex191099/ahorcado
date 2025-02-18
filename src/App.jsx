@@ -23,7 +23,7 @@ function App() {
 
   const [ganador, setGanador] = useState(null)
 
-  const [palabrasecreta, setpalabrasecreta] = useState(getpalabrarandom())
+  const [palabrasecreta, setpalabrasecreta] = useState(getpalabrarandom().normalize("NFD").replace(/[\u0300-\u036f]/g, ""))
   
   const resetear = () => {
     setGanador(null)
@@ -44,9 +44,7 @@ function App() {
 
         //guardar letra
         setaciertos((aciertos) => (aciertos.includes(letra) ? aciertos : [...aciertos,letra]))
-        if (palabrasecreta.split('').every((letra) => aciertos.includes(letra))) {
-          setGanador(true)
-        }
+        
           //TO-DO comprobar si ha acertado la palabra entera
         //setGanador(true)
 
@@ -78,6 +76,11 @@ function App() {
     return () => window.removeEventListener("keydown", teclapresionada)
   }, [errores,aciertos])
 
+  useEffect(() => {
+    if (palabrasecreta.split('').every((letra) => aciertos.includes(letra))) {
+      setGanador(true)
+    }
+  }, [aciertos])
   return (
     <>
         <pre>

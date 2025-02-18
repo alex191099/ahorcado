@@ -9,7 +9,7 @@ export const PalabraOculta = ({palabrasecreta,aciertos}) => {
     
     return (
         <>
-        <p>
+        <p className="palabraoculta">
             {mostrarPalabra()}
         </p>
         </>
